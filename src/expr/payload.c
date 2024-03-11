@@ -66,8 +66,6 @@ nftnl_expr_payload_set(struct nftnl_expr *e, uint16_t type,
 	case NFTNL_EXPR_PAYLOAD_FLAGS:
 		memcpy(&payload->csum_flags, data, sizeof(payload->csum_flags));
 		break;
-	default:
-		return -1;
 	}
 	return 0;
 }
@@ -238,10 +236,22 @@ nftnl_expr_payload_snprintf(char *buf, size_t len,
 				payload->offset, payload->dreg);
 }
 
+static struct attr_policy payload_attr_policy[__NFTNL_EXPR_PAYLOAD_MAX] = {
+	[NFTNL_EXPR_PAYLOAD_DREG]        = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_BASE]        = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_OFFSET]      = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_LEN]         = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_SREG]        = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_CSUM_TYPE]   = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_CSUM_OFFSET] = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_PAYLOAD_FLAGS]       = { .maxlen = sizeof(uint32_t) },
+};
+
 struct expr_ops expr_ops_payload = {
 	.name		= "payload",
 	.alloc_len	= sizeof(struct nftnl_expr_payload),
-	.max_attr	= NFTA_PAYLOAD_MAX,
+	.nftnl_max_attr	= __NFTNL_EXPR_PAYLOAD_MAX - 1,
+	.attr_policy	= payload_attr_policy,
 	.set		= nftnl_expr_payload_set,
 	.get		= nftnl_expr_payload_get,
 	.parse		= nftnl_expr_payload_parse,

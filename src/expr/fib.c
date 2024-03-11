@@ -43,8 +43,6 @@ nftnl_expr_fib_set(struct nftnl_expr *e, uint16_t result,
 	case NFTNL_EXPR_FIB_FLAGS:
 		memcpy(&fib->flags, data, sizeof(fib->flags));
 		break;
-	default:
-		return -1;
 	}
 	return 0;
 }
@@ -190,10 +188,17 @@ nftnl_expr_fib_snprintf(char *buf, size_t remain,
 	return offset;
 }
 
+static struct attr_policy fib_attr_policy[__NFTNL_EXPR_FIB_MAX] = {
+	[NFTNL_EXPR_FIB_DREG]   = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_FIB_RESULT] = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_FIB_FLAGS]  = { .maxlen = sizeof(uint32_t) },
+};
+
 struct expr_ops expr_ops_fib = {
 	.name		= "fib",
 	.alloc_len	= sizeof(struct nftnl_expr_fib),
-	.max_attr	= NFTA_FIB_MAX,
+	.nftnl_max_attr	= __NFTNL_EXPR_FIB_MAX - 1,
+	.attr_policy	= fib_attr_policy,
 	.set		= nftnl_expr_fib_set,
 	.get		= nftnl_expr_fib_get,
 	.parse		= nftnl_expr_fib_parse,

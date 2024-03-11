@@ -53,8 +53,6 @@ nftnl_expr_lookup_set(struct nftnl_expr *e, uint16_t type,
 	case NFTNL_EXPR_LOOKUP_FLAGS:
 		memcpy(&lookup->flags, data, sizeof(lookup->flags));
 		break;
-	default:
-		return -1;
 	}
 	return 0;
 }
@@ -197,10 +195,19 @@ static void nftnl_expr_lookup_free(const struct nftnl_expr *e)
 	xfree(lookup->set_name);
 }
 
+static struct attr_policy lookup_attr_policy[__NFTNL_EXPR_LOOKUP_MAX] = {
+	[NFTNL_EXPR_LOOKUP_SREG]   = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_LOOKUP_DREG]   = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_LOOKUP_SET]    = { .maxlen = NFT_SET_MAXNAMELEN },
+	[NFTNL_EXPR_LOOKUP_SET_ID] = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_LOOKUP_FLAGS]  = { .maxlen = sizeof(uint32_t) },
+};
+
 struct expr_ops expr_ops_lookup = {
 	.name		= "lookup",
 	.alloc_len	= sizeof(struct nftnl_expr_lookup),
-	.max_attr	= NFTA_LOOKUP_MAX,
+	.nftnl_max_attr	= __NFTNL_EXPR_LOOKUP_MAX - 1,
+	.attr_policy	= lookup_attr_policy,
 	.free		= nftnl_expr_lookup_free,
 	.set		= nftnl_expr_lookup_set,
 	.get		= nftnl_expr_lookup_get,

@@ -60,8 +60,6 @@ static int nftnl_expr_log_set(struct nftnl_expr *e, uint16_t type,
 	case NFTNL_EXPR_LOG_FLAGS:
 		memcpy(&log->flags, data, sizeof(log->flags));
 		break;
-	default:
-		return -1;
 	}
 	return 0;
 }
@@ -244,10 +242,20 @@ static void nftnl_expr_log_free(const struct nftnl_expr *e)
 	xfree(log->prefix);
 }
 
+static struct attr_policy log_attr_policy[__NFTNL_EXPR_LOG_MAX] = {
+	[NFTNL_EXPR_LOG_PREFIX]     = { .maxlen = NF_LOG_PREFIXLEN },
+	[NFTNL_EXPR_LOG_GROUP]      = { .maxlen = sizeof(uint16_t) },
+	[NFTNL_EXPR_LOG_SNAPLEN]    = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_LOG_QTHRESHOLD] = { .maxlen = sizeof(uint16_t) },
+	[NFTNL_EXPR_LOG_LEVEL]      = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_LOG_FLAGS]      = { .maxlen = sizeof(uint32_t) },
+};
+
 struct expr_ops expr_ops_log = {
 	.name		= "log",
 	.alloc_len	= sizeof(struct nftnl_expr_log),
-	.max_attr	= NFTA_LOG_MAX,
+	.nftnl_max_attr	= __NFTNL_EXPR_LOG_MAX - 1,
+	.attr_policy	= log_attr_policy,
 	.free		= nftnl_expr_log_free,
 	.set		= nftnl_expr_log_set,
 	.get		= nftnl_expr_log_get,

@@ -41,8 +41,6 @@ static int nftnl_expr_fwd_set(struct nftnl_expr *e, uint16_t type,
 	case NFTNL_EXPR_FWD_NFPROTO:
 		memcpy(&fwd->nfproto, data, sizeof(fwd->nfproto));
 		break;
-	default:
-		return -1;
 	}
 	return 0;
 }
@@ -150,10 +148,17 @@ static int nftnl_expr_fwd_snprintf(char *buf, size_t remain,
 	return offset;
 }
 
+static struct attr_policy fwd_attr_policy[__NFTNL_EXPR_FWD_MAX] = {
+	[NFTNL_EXPR_FWD_SREG_DEV]  = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_FWD_SREG_ADDR] = { .maxlen = sizeof(uint32_t) },
+	[NFTNL_EXPR_FWD_NFPROTO]   = { .maxlen = sizeof(uint32_t) },
+};
+
 struct expr_ops expr_ops_fwd = {
 	.name		= "fwd",
 	.alloc_len	= sizeof(struct nftnl_expr_fwd),
-	.max_attr	= NFTA_FWD_MAX,
+	.nftnl_max_attr	= __NFTNL_EXPR_FWD_MAX - 1,
+	.attr_policy	= fwd_attr_policy,
 	.set		= nftnl_expr_fwd_set,
 	.get		= nftnl_expr_fwd_get,
 	.parse		= nftnl_expr_fwd_parse,
