@@ -150,10 +150,10 @@ static int nftnl_obj_ct_timeout_set(struct nftnl_obj *e, uint16_t type,
 
 	switch (type) {
 	case NFTNL_OBJ_CT_TIMEOUT_L3PROTO:
-		memcpy(&timeout->l3proto, data, sizeof(timeout->l3proto));
+		memcpy(&timeout->l3proto, data, data_len);
 		break;
 	case NFTNL_OBJ_CT_TIMEOUT_L4PROTO:
-		memcpy(&timeout->l4proto, data, sizeof(timeout->l4proto));
+		memcpy(&timeout->l4proto, data, data_len);
 		break;
 	case NFTNL_OBJ_CT_TIMEOUT_ARRAY:
 		if (data_len < sizeof(uint32_t) * NFTNL_CTTIMEOUT_ARRAY_MAX)
@@ -162,8 +162,6 @@ static int nftnl_obj_ct_timeout_set(struct nftnl_obj *e, uint16_t type,
 		memcpy(timeout->timeout, data,
 		       sizeof(uint32_t) * NFTNL_CTTIMEOUT_ARRAY_MAX);
 		break;
-	default:
-		return -1;
 	}
 	return 0;
 }
@@ -310,11 +308,18 @@ static int nftnl_obj_ct_timeout_snprintf(char *buf, size_t remain,
 	return offset;
 }
 
+static struct attr_policy
+obj_ct_timeout_attr_policy[__NFTNL_OBJ_CT_TIMEOUT_MAX] = {
+	[NFTNL_OBJ_CT_TIMEOUT_L3PROTO]	= { .maxlen = sizeof(uint16_t) },
+	[NFTNL_OBJ_CT_TIMEOUT_L4PROTO]	= { .maxlen = sizeof(uint8_t) },
+};
+
 struct obj_ops obj_ops_ct_timeout = {
 	.name		= "ct_timeout",
 	.type		= NFT_OBJECT_CT_TIMEOUT,
 	.alloc_len	= sizeof(struct nftnl_obj_ct_timeout),
-	.max_attr	= NFTA_CT_TIMEOUT_MAX,
+	.nftnl_max_attr	= __NFTNL_OBJ_CT_TIMEOUT_MAX - 1,
+	.attr_policy	= obj_ct_timeout_attr_policy,
 	.set		= nftnl_obj_ct_timeout_set,
 	.get		= nftnl_obj_ct_timeout_get,
 	.parse		= nftnl_obj_ct_timeout_parse,

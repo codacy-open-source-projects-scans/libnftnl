@@ -128,6 +128,7 @@ static uint32_t nftnl_set_validate[NFTNL_SET_MAX + 1] = {
 	[NFTNL_SET_DATA_LEN]		= sizeof(uint32_t),
 	[NFTNL_SET_OBJ_TYPE]		= sizeof(uint32_t),
 	[NFTNL_SET_FAMILY]		= sizeof(uint32_t),
+	[NFTNL_SET_ID]			= sizeof(uint32_t),
 	[NFTNL_SET_POLICY]		= sizeof(uint32_t),
 	[NFTNL_SET_DESC_SIZE]	= sizeof(uint32_t),
 	[NFTNL_SET_TIMEOUT]		= sizeof(uint64_t),
@@ -145,21 +146,11 @@ int nftnl_set_set_data(struct nftnl_set *s, uint16_t attr, const void *data,
 
 	switch(attr) {
 	case NFTNL_SET_TABLE:
-		if (s->flags & (1 << NFTNL_SET_TABLE))
-			xfree(s->table);
-
-		s->table = strdup(data);
-		if (!s->table)
-			return -1;
-		break;
+		return nftnl_set_str_attr(&s->table, &s->flags,
+					  attr, data, data_len);
 	case NFTNL_SET_NAME:
-		if (s->flags & (1 << NFTNL_SET_NAME))
-			xfree(s->name);
-
-		s->name = strdup(data);
-		if (!s->name)
-			return -1;
-		break;
+		return nftnl_set_str_attr(&s->name, &s->flags,
+					  attr, data, data_len);
 	case NFTNL_SET_HANDLE:
 		memcpy(&s->handle, data, sizeof(s->handle));
 		break;
