@@ -1,6 +1,7 @@
 #ifndef LIBNFTNL_UTILS_H
 #define LIBNFTNL_UTILS_H 1
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -81,5 +82,13 @@ int nftnl_fprintf(FILE *fpconst, const void *obj, uint32_t cmd, uint32_t type,
 
 int nftnl_set_str_attr(const char **dptr, uint32_t *flags,
 		       uint16_t attr, const void *data, uint32_t data_len);
+
+struct nlattr;
+
+void nftnl_attr_put_ifname(struct nlmsghdr *nlh, const char *ifname);
+char *nftnl_attr_get_ifname(const struct nlattr *attr);
+
+int nftnl_parse_str_attr(const struct nlattr *tb, int attr,
+			 const char **field, uint32_t *flags);
 
 #endif

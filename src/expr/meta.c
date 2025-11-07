@@ -1,10 +1,6 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  *
  * This code has been sponsored by Sophos Astaro <http://www.sophos.com>
  */
@@ -22,7 +18,7 @@
 #include <libnftnl/rule.h>
 
 #ifndef NFT_META_MAX
-#define NFT_META_MAX (NFT_META_BRI_BROUTE + 1)
+#define NFT_META_MAX (NFT_META_BRI_IIFHWADDR + 1)
 #endif
 
 struct nftnl_expr_meta {
@@ -167,6 +163,7 @@ static const char *meta_key2str_array[NFT_META_MAX] = {
 	[NFT_META_SDIF]		= "sdif",
 	[NFT_META_SDIFNAME]	= "sdifname",
 	[NFT_META_BRI_BROUTE]	= "broute",
+	[NFT_META_BRI_IIFHWADDR] = "ibrhwaddr",
 };
 
 static const char *meta_key2str(uint8_t key)
@@ -175,19 +172,6 @@ static const char *meta_key2str(uint8_t key)
 		return meta_key2str_array[key];
 
 	return "unknown";
-}
-
-static inline int str2meta_key(const char *str)
-{
-	int i;
-
-	for (i = 0; i < NFT_META_MAX; i++) {
-		if (strcmp(str, meta_key2str_array[i]) == 0)
-			return i;
-	}
-
-	errno = EINVAL;
-	return -1;
 }
 
 static int

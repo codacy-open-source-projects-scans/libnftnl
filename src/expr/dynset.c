@@ -1,10 +1,6 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * Copyright (c) 2014, 2015 Patrick McHardy <kaber@trash.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  */
 
 #include "internal.h"
@@ -249,13 +245,11 @@ nftnl_expr_dynset_parse(struct nftnl_expr *e, struct nlattr *attr)
 		dynset->timeout = be64toh(mnl_attr_get_u64(tb[NFTA_DYNSET_TIMEOUT]));
 		e->flags |= (1 << NFTNL_EXPR_DYNSET_TIMEOUT);
 	}
-	if (tb[NFTA_DYNSET_SET_NAME]) {
-		dynset->set_name =
-			strdup(mnl_attr_get_str(tb[NFTA_DYNSET_SET_NAME]));
-		if (!dynset->set_name)
-			return -1;
-		e->flags |= (1 << NFTNL_EXPR_DYNSET_SET_NAME);
-	}
+	if (nftnl_parse_str_attr(tb[NFTA_DYNSET_SET_NAME],
+				 NFTNL_EXPR_DYNSET_SET_NAME,
+				 (const char **)&dynset->set_name,
+				 &e->flags) < 0)
+		return -1;
 	if (tb[NFTA_DYNSET_SET_ID]) {
 		dynset->set_id = ntohl(mnl_attr_get_u32(tb[NFTA_DYNSET_SET_ID]));
 		e->flags |= (1 << NFTNL_EXPR_DYNSET_SET_ID);

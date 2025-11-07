@@ -1,10 +1,6 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * (C) 2012-2013 by Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  *
  * This code has been sponsored by Sophos Astaro <http://www.sophos.com>
  */
@@ -151,15 +147,10 @@ nftnl_expr_log_parse(struct nftnl_expr *e, struct nlattr *attr)
 	if (mnl_attr_parse_nested(attr, nftnl_expr_log_cb, tb) < 0)
 		return -1;
 
-	if (tb[NFTA_LOG_PREFIX]) {
-		if (log->prefix)
-			xfree(log->prefix);
-
-		log->prefix = strdup(mnl_attr_get_str(tb[NFTA_LOG_PREFIX]));
-		if (!log->prefix)
-			return -1;
-		e->flags |= (1 << NFTNL_EXPR_LOG_PREFIX);
-	}
+	if (nftnl_parse_str_attr(tb[NFTA_LOG_PREFIX],
+				 NFTNL_EXPR_LOG_PREFIX,
+				 &log->prefix, &e->flags) < 0)
+		return -1;
 	if (tb[NFTA_LOG_GROUP]) {
 		log->group = ntohs(mnl_attr_get_u16(tb[NFTA_LOG_GROUP]));
 		e->flags |= (1 << NFTNL_EXPR_LOG_GROUP);

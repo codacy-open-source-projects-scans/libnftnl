@@ -1,10 +1,6 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
 /*
  * (C) 2012-2013 by Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
  *
  * This code has been sponsored by Sophos Astaro <http://www.sophos.com>
  */
@@ -289,14 +285,9 @@ int nftnl_table_nlmsg_parse(const struct nlmsghdr *nlh, struct nftnl_table *t)
 	if (mnl_attr_parse(nlh, sizeof(*nfg), nftnl_table_parse_attr_cb, tb) < 0)
 		return -1;
 
-	if (tb[NFTA_TABLE_NAME]) {
-		if (t->flags & (1 << NFTNL_TABLE_NAME))
-			xfree(t->name);
-		t->name = strdup(mnl_attr_get_str(tb[NFTA_TABLE_NAME]));
-		if (!t->name)
-			return -1;
-		t->flags |= (1 << NFTNL_TABLE_NAME);
-	}
+	if (nftnl_parse_str_attr(tb[NFTA_TABLE_NAME], NFTNL_TABLE_NAME,
+				 &t->name, &t->flags) < 0)
+		return -1;
 	if (tb[NFTA_TABLE_FLAGS]) {
 		t->table_flags = ntohl(mnl_attr_get_u32(tb[NFTA_TABLE_FLAGS]));
 		t->flags |= (1 << NFTNL_TABLE_FLAGS);
