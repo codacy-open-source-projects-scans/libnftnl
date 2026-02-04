@@ -705,7 +705,7 @@ int nftnl_set_elem_parse_file(struct nftnl_set_elem *e, enum nftnl_parse_type ty
 int nftnl_set_elem_snprintf_default(char *buf, size_t remain,
 				    const struct nftnl_set_elem *e)
 {
-	int ret, dregtype = DATA_NONE, offset = 0, i;
+	int ret, dregtype = DATA_NONE, offset = 0;
 
 	ret = snprintf(buf, remain, "element ");
 	SNPRINTF_BUFFER_SIZE(ret, remain, offset);
@@ -748,19 +748,9 @@ int nftnl_set_elem_snprintf_default(char *buf, size_t remain,
 	}
 
 	if (e->user.len) {
-		ret = snprintf(buf + offset, remain, "  userdata = { ");
-		SNPRINTF_BUFFER_SIZE(ret, remain, offset);
-
-		for (i = 0; i < e->user.len; i++) {
-			char *c = e->user.data;
-
-			ret = snprintf(buf + offset, remain,
-				       isprint(c[i]) ? "%c" : "\\x%02hhx",
-				       c[i]);
-			SNPRINTF_BUFFER_SIZE(ret, remain, offset);
-		}
-
-		ret = snprintf(buf + offset, remain, " }");
+		ret = snprintf(buf + offset, remain,
+			       "  userdata len %d sum 0x%x",
+			       e->user.len, bytesum(e->user.data, e->user.len));
 		SNPRINTF_BUFFER_SIZE(ret, remain, offset);
 	}
 

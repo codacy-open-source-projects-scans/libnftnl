@@ -8,7 +8,6 @@
 #include <udata.h>
 #include <utils.h>
 
-#include <arpa/inet.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -101,9 +100,7 @@ EXPORT_SYMBOL(nftnl_udata_put_u32);
 bool nftnl_udata_put_u32(struct nftnl_udata_buf *buf, uint8_t type,
 			 uint32_t data)
 {
-	uint32_t data_be = htonl(data);
-
-	return nftnl_udata_put(buf, type, sizeof(data_be), &data_be);
+	return nftnl_udata_put(buf, type, sizeof(data), &data);
 }
 
 EXPORT_SYMBOL(nftnl_udata_type);
@@ -131,7 +128,7 @@ uint32_t nftnl_udata_get_u32(const struct nftnl_udata *attr)
 
 	memcpy(&data, attr->value, sizeof(data));
 
-	return ntohl(data);
+	return data;
 }
 
 EXPORT_SYMBOL(nftnl_udata_next);
