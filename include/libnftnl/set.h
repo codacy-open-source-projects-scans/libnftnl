@@ -42,8 +42,6 @@ struct nftnl_set;
 struct nftnl_set *nftnl_set_alloc(void);
 void nftnl_set_free(const struct nftnl_set *s);
 
-struct nftnl_set *nftnl_set_clone(const struct nftnl_set *set);
-
 bool nftnl_set_is_set(const struct nftnl_set *s, uint16_t attr);
 void nftnl_set_unset(struct nftnl_set *s, uint16_t attr);
 int nftnl_set_set(struct nftnl_set *s, uint16_t attr, const void *data) __attribute__((deprecated));
@@ -124,8 +122,6 @@ struct nftnl_set_elem;
 
 struct nftnl_set_elem *nftnl_set_elem_alloc(void);
 void nftnl_set_elem_free(struct nftnl_set_elem *s);
-
-struct nftnl_set_elem *nftnl_set_elem_clone(struct nftnl_set_elem *elem);
 
 void nftnl_set_elem_add(struct nftnl_set *s, struct nftnl_set_elem *elem);
 

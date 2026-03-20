@@ -292,28 +292,6 @@ uint64_t nftnl_set_elem_get_u64(struct nftnl_set_elem *s, uint16_t attr)
 	return val;
 }
 
-struct nftnl_set_elem *nftnl_set_elem_clone(struct nftnl_set_elem *elem)
-{
-	struct nftnl_set_elem *newelem;
-
-	newelem = nftnl_set_elem_alloc();
-	if (newelem == NULL)
-		return NULL;
-
-	memcpy(newelem, elem, sizeof(*elem));
-
-	if (elem->flags & (1 << NFTNL_SET_ELEM_CHAIN)) {
-		newelem->data.chain = strdup(elem->data.chain);
-		if (!newelem->data.chain)
-			goto err;
-	}
-
-	return newelem;
-err:
-	nftnl_set_elem_free(newelem);
-	return NULL;
-}
-
 EXPORT_SYMBOL(nftnl_set_elem_nlmsg_build_payload);
 void nftnl_set_elem_nlmsg_build_payload(struct nlmsghdr *nlh,
 				      struct nftnl_set_elem *e)
