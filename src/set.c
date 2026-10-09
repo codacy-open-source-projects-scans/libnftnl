@@ -548,6 +548,9 @@ nftnl_set_desc_concat_field_parse_attr_cb(const struct nlattr *attr, void *data)
 	if (mnl_attr_validate(attr, MNL_TYPE_U32))
 		return MNL_CB_ERROR;
 
+	if (s->desc.field_count >= NFT_REG32_COUNT)
+		return MNL_CB_ERROR;
+
 	s->desc.field_len[s->desc.field_count] = ntohl(mnl_attr_get_u32(attr));
 	s->desc.field_count++;
 
